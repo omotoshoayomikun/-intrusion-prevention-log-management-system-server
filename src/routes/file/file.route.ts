@@ -8,7 +8,7 @@ const router = Router();
 router.post("/upload", verifyToken, upload.single("document"), FileController.UploadFileController)
 router.get("/files", verifyToken, FileController.GetAllFilesController)
 router.get("/file", verifyToken, FileController.GetSingleFileController)
-router.get("/admin-get-file", verifyAdmin, FileController.AdminGetFileController)
+router.get("/admin-get-files", verifyAdmin, FileController.AdminGetFileController)
 
 
 export default router;

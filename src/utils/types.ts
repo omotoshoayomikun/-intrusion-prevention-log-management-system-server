@@ -170,3 +170,11 @@ export interface IFile {
     isDeleted: boolean;
     deletedAt: Date;
 }
+
+export interface GeoLocation {
+    country?: string;
+    region?: string;
+    city?: string;
+    latitude?: number;
+    longitude?: number;
+}
