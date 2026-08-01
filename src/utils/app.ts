@@ -2,18 +2,15 @@ import express, { type Application } from 'express';
 import cors from "cors"
 import { Request, Response, NextFunction } from 'express';
 import {env} from "../utils/env" ;
-import customerRoutes from '../routes/customers/coustomer.routes';
-import staffRoutes from '../routes/staffs/staff.routes';
-import authRoutes from '../routes/auth/auth.routes';
-import productRoutes from '../routes/products/products.routes';
-import holidayRoutes from '../routes/holiday/holiday.routes';
-import loanRoutes from '../routes/loan/loan.routes';
+import authRoutes from "../routes/auth/auth.routes"
+import fileRoutes from "../routes/file/file.route"
+import userRoutes from "../routes/user/user.route"
 
 // import { notFound, errorHandler } from "../middleware/errors";
 
 
 import cookieParser from "cookie-parser";
-const app: Application = express();
+const app: Application = express(); 
 
 
 app.use(cors({
@@ -30,12 +27,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //routes
-app.use("/api/customer", customerRoutes);
-app.use("/api/staffs", staffRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/holidays", holidayRoutes);
-app.use("/api/loans", loanRoutes);
+app.use("/api/file", fileRoutes);
+app.use("/api/user", userRoutes);
+// app.use("/api/customer", customerRoutes);
+// app.use("/api/staffs", staffRoutes);
+// app.use("/api/products", productRoutes);
+// app.use("/api/holidays", holidayRoutes);
+// app.use("/api/loans", loanRoutes);
 
 app.get("/", (req, res) => {
     res.status(200).send("Server Works");

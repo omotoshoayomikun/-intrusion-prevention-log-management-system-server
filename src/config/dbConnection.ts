@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 import { env } from "../utils/env";
 import logger from "./loggerConfig";
 
+import dns from "node:dns/promises"; 
+dns.setServers(["1.1.1.1"]);
+
 export const connectDB = async () => {
 
     try {
