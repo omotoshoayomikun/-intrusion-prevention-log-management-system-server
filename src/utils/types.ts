@@ -40,7 +40,7 @@ export enum SecurityAction {
 }
 
 export interface ISecurityLog {
-  user?: Types.ObjectId | null;
+  userId?: Types.ObjectId | null;
   ipAddress: string;
   country?: string;
   region?: string;
@@ -61,6 +61,7 @@ export interface ISecurityLog {
   createdAt: Date;
   updatedAt: Date;
   requestId: string;
+  riskScore: number
 }
 
 export type SecurityLogDocument = HydratedDocument<ISecurityLog>;
@@ -72,12 +73,26 @@ declare global {
       securityLogId?: string;
       user?: IUser;
 
-        geo?: {
+      geo?: {
         country?: string;
         region?: string;
         city?: string;
         latitude?: number;
         longitude?: number;
+      };
+      security?: {
+        ip?: string;
+        vpnDetected?: boolean;
+        sqlInjection?: boolean;
+        nosqlInjection?: boolean;
+        xss?: boolean;
+        invalidJwt?: boolean;
+        rateLimited?: boolean;
+        forbiddenUpload?: boolean;
+        riskScore?: number;
+        attackType?: AttackType;
+        severity?: Severity;
+        actionTaken?: SecurityAction;
       };
     }
   }
@@ -157,24 +172,44 @@ export interface SecurityStatistics {
 }
 
 export interface IFile {
-    userId: ObjectId;
-    originalName: string;
-    fileName: string;
-    mimeType: string;
-    extension: string;
-    size: number;
-    cloudinaryId: string;
-    url: string;
-    folder: string;
-    uploadedByIp: string;
-    isDeleted: boolean;
-    deletedAt: Date;
+  userId: ObjectId;
+  originalName: string;
+  fileName: string;
+  mimeType: string;
+  extension: string;
+  size: number;
+  cloudinaryId: string;
+  url: string;
+  folder: string;
+  uploadedByIp: string;
+  isDeleted: boolean;
+  deletedAt: Date;
 }
 
 export interface GeoLocation {
-    country?: string;
-    region?: string;
-    city?: string;
-    latitude?: number;
-    longitude?: number;
+  country?: string;
+  region?: string;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
 }
+
+export interface VpnResult {
+  isVpn: boolean;
+  isp?: string;
+  organization?: string;
+}
+
+export const VPN_KEYWORDS = [
+  "vpn",
+  "proxy",
+  "digitalocean",
+  "ovh",
+  "linode",
+  "vultr",
+  "m247",
+  "contabo",
+  "amazon",
+  "google cloud",
+  "microsoft azure",
+];

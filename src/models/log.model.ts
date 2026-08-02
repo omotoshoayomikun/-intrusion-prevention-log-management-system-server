@@ -9,7 +9,7 @@ import { BaseSchemaOptions } from "./base.model";
 
 const SecurityLogSchema = new Schema<ISecurityLog>(
     {
-        user: { type: Schema.Types.ObjectId, ref: "User", default: null, index: true },
+        userId: { type: Schema.Types.ObjectId, ref: "User", default: null, index: true },
         ipAddress: { type: String, required: true, index: true, trim: true },
         country: { type: String, default: null, index: true },
         region: { type: String, default: null },
@@ -28,6 +28,7 @@ const SecurityLogSchema = new Schema<ISecurityLog>(
         attackType: { type: String, enum: Object.values(AttackType), default: AttackType.NONE, index: true, },
         actionTaken: { type: String, enum: Object.values(SecurityAction), default: SecurityAction.ALLOWED, index: true, },
         requestId: { type: String, required: true, unique: true, index: true },
+        riskScore: { type: Number, default: 0, index: true },
     },
     BaseSchemaOptions
 );

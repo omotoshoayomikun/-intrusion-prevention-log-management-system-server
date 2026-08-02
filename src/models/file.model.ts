@@ -4,7 +4,7 @@ import { IFile } from "../utils/types";
 
 const FileSchema = new Schema<IFile>(
     {
-        userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
         originalName: { type: String, required: true, trim: true },
         fileName: { type: String, required: true, trim: true },
         mimeType: { type: String, required: true },
@@ -36,9 +36,6 @@ FileSchema.index({
     extension: 1,
 });
 
-FileSchema.index({
-    cloudinaryId: 1,
-});
 
 const File = model<IFile>("File", FileSchema);
 

@@ -1,7 +1,7 @@
 import express, { type Application } from 'express';
 import cors from "cors"
 import { Request, Response, NextFunction } from 'express';
-import {env} from "../utils/env" ;
+import { env } from "../utils/env";
 import authRoutes from "../routes/auth/auth.routes"
 import fileRoutes from "../routes/file/file.route"
 import userRoutes from "../routes/user/user.route"
@@ -10,7 +10,14 @@ import userRoutes from "../routes/user/user.route"
 
 
 import cookieParser from "cookie-parser";
-const app: Application = express(); 
+import requestLogger from '../middleware/Logger.middleware';
+import geoIpMiddleware from '../middleware/GoeIp.middleware';
+import vpnDetectionMiddleware from '../middleware/CheckVpn.middleware';
+import sqlInjectionMiddleware from '../middleware/SqlInjection.middleware';
+import noSqlInjectionMiddleware from '../middleware/NoSqlInjection.middleware';
+import xssMiddleware from '../middleware/Xss.middleware';
+import riskScoreMiddleware from '../middleware/RiskScore.middleware';
+const app: Application = express();
 
 
 app.use(cors({
@@ -25,6 +32,24 @@ app.use(cors({
 app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// app.use(requestLogger);
+// app.use(geoIpMiddleware);
+// app.use(vpnDetectionMiddleware);
+// app.use(sqlInjectionMiddleware);
+// app.use(noSqlInjectionMiddleware);
+// app.use(xssMiddleware);
+
+export const securityMiddleware = [
+    geoIpMiddleware,
+    vpnDetectionMiddleware,
+    sqlInjectionMiddleware,
+    noSqlInjectionMiddleware,
+    xssMiddleware,
+    riskScoreMiddleware,
+]
+
+app.use(requestLogger);
 
 //routes
 app.use("/api/auth", authRoutes);

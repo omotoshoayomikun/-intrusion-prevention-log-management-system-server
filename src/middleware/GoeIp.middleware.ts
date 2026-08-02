@@ -2,32 +2,15 @@ import { NextFunction, Request, Response } from "express";
 // import { getClientIp } from "../utils/get-client-ip";
 // import { getGeoLocation } from "../utils/geo-ip";
 import geoip from "geoip-lite";
+import { getClientIp } from "../config/getClientIp";
 
 const geoIpMiddleware = (req: Request, _: Response, next: NextFunction) => {
-    // const ip = getClientIp(req);
     const forwarded = req.headers["x-forwarded-for"];
-    console.log(`Forwarded IP: ${forwarded}`);
-    console.log(geoip.lookup("1.1.1.1"));
-    const ip = () => {
-        if (typeof forwarded === "string") {
-            return forwarded.split(",")[0].trim();
-        }
-        if (Array.isArray(forwarded)) {
-            return forwarded[0];
-        }
-        return (
-            req.socket.remoteAddress ||
-            req.ip ||
-            ""
-        );
-    }
-
-    console.log(`IP: ${ip()}`);
-
+    const ip = getClientIp(req);
     // const geo = getGeoLocation(ip());
 
     const geo = () => {
-        const geo = geoip.lookup(ip());
+        const geo = geoip.lookup(ip);
 
         if (!geo) {
             return {};
@@ -42,7 +25,7 @@ const geoIpMiddleware = (req: Request, _: Response, next: NextFunction) => {
         };
     }
 
-        console.log(`Geo IP: ${geo().city}, ${geo().region}, ${geo().country}`);
+        // console.log(`Geo IP: ${geo().city}, ${geo().region}, ${geo().country}`);
 
     req.geo = geo();
     next();
