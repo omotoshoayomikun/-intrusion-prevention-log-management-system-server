@@ -3,7 +3,7 @@ import { getClientIp } from "../config/getClientIp";
 import SecurityLog from "../models/log.model";
 import { UAParser } from "ua-parser-js";
 import logger from "../config/loggerConfig";
-import { v4 as uuid } from "uuid";
+// import { v4 as uuid } from "uuid";
 
 const requestLogger = (req: Request, res: Response, next: NextFunction) => {
     const startTime = Date.now();
@@ -12,7 +12,7 @@ const requestLogger = (req: Request, res: Response, next: NextFunction) => {
     const os = parser.getOS();
     const device = parser.getDevice();
     const user_id = req.user?._id ? req.user?._id : null
-    const requestId = uuid();
+    const requestId = crypto.randomUUID();
 
     req.requestId = requestId;
     // Capture request information here
