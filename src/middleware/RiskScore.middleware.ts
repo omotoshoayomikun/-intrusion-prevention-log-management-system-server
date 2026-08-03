@@ -1,7 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { AttackType, SecurityAction, Severity } from "../utils/types";
+import BlockedIP from "../models/blockedIp.model";
+import { getClientIp } from "../config/getClientIp";
 
-const riskScoreMiddleware = (req: Request, res: Response, next: NextFunction) => {
+const riskScoreMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     let score = 0;
     const security = req.security ?? {};
     // VPN
@@ -61,6 +63,17 @@ const riskScoreMiddleware = (req: Request, res: Response, next: NextFunction) =>
     }
     req.security = security;
     if (score >= 60) {
+
+        await BlockedIP.create({
+            ipAddress: getClientIp(req),
+            reason: "Risk score exceeded threshold",
+            riskScore: score,
+            blockedBy: null, // System blocked it
+            isActive: true,
+        });
+
+        req.security.actionTaken = SecurityAction.BLOCKED;
+
         return res.status(403).json({
             success: false,
             message: "Request blocked by the Intrusion Prevention System.",

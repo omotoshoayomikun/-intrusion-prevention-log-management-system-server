@@ -2,7 +2,7 @@ import { Router } from "express"
 import upload from "../../utils/multer";
 import * as FileController from "../../controllers/file/file.controller"
 import { verifyToken, verifyAdmin } from "../../middleware/verifyToken";
-import { securityMiddleware } from "../../utils/app";
+import { securityMiddleware } from "../../middleware";
 
 const router = Router();
 

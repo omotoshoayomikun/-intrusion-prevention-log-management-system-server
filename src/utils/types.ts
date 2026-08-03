@@ -93,6 +93,7 @@ declare global {
         attackType?: AttackType;
         severity?: Severity;
         actionTaken?: SecurityAction;
+        blockedIp?: boolean;
       };
     }
   }
@@ -213,3 +214,13 @@ export const VPN_KEYWORDS = [
   "google cloud",
   "microsoft azure",
 ];
+
+export interface IBlockedIp {
+  ipAddress: string;
+  reason: string;
+  isActive: boolean;
+  blockedBy?: Types.ObjectId | null;
+  riskScore: number;
+  blockedBySystem: boolean;
+  // expiresAt?: Date | null;
+}
