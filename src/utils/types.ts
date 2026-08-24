@@ -103,6 +103,8 @@ declare global {
         severity?: Severity;
         actionTaken?: SecurityAction;
         blockedIp?: boolean;
+        country?: string;
+        foreignCountry?: boolean;
       };
     }
   }
@@ -184,7 +186,7 @@ export interface SecurityStatistics {
 }
 
 export interface IFile {
-  userId: ObjectId;
+  userId: Types.ObjectId;
   originalName: string;
   fileName: string;
   mimeType: string;
@@ -226,12 +228,19 @@ export const VPN_KEYWORDS = [
   "microsoft azure",
 ];
 
-export interface IBlockedIp {
-  ipAddress: string;
-  reason: string;
-  isActive: boolean;
-  blockedBy?: Types.ObjectId | null;
-  riskScore: number;
-  blockedBySystem: boolean;
-  // expiresAt?: Date | null;
+export interface IBlockedIP {
+    ipAddress: string;
+
+    reason: string;
+
+    riskScore: number;
+
+    attackType?: string;
+
+    blockedBy: "SYSTEM" | "ADMIN";
+
+    blockedByUserId?: Types.ObjectId | null;
+
+    createdAt: Date;
+    updatedAt: Date;
 }

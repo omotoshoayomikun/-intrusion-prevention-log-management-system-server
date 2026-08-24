@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { parseQueryParams } from "../../utils/queryParams";
 import User from "../../models/user.model";
+import userService from "../../services/user/user.service";
 
 export const GetAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -45,3 +46,36 @@ export const GetAllUsers = async (req: Request, res: Response, next: NextFunctio
         next(error)
     }
 }
+
+
+export const getUserDashboardController = async (
+    req: Request,
+    res: Response
+) => {
+    try {
+        const userId = req.user?._id;
+
+        if (!userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Unauthorized",
+            });
+        }
+
+        const dashboard = await userService.getDashboard(userId.toString());
+
+        return res.status(200).json({
+            success: true,
+            message: "User dashboard retrieved successfully.",
+            data: dashboard,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message:
+                error instanceof Error
+                    ? error.message
+                    : "Failed to fetch user dashboard.",
+        });
+    }
+};

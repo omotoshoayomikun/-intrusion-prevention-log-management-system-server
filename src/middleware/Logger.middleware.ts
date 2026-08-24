@@ -38,7 +38,7 @@ const requestLogger = (req: Request, res: Response, next: NextFunction) => {
                 latitude: req.geo?.latitude,
                 longitude: req.geo?.longitude,
                 method: req.method,
-                endpoint: req.path,
+                endpoint: req.originalUrl,
                 statusCode: res.statusCode,
                 responseTime: responseTime,
                 severity: req.security?.severity,

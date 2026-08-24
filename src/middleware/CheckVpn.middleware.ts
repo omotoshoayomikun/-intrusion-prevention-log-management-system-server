@@ -2,19 +2,41 @@ import { NextFunction, Request, Response } from "express";
 import { getClientIp } from "../config/getClientIp";
 import { checkVpn } from "../config/checkVpn";
 
-const vpnDetectionMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    const ip = getClientIp(req);
+const ALLOWED_COUNTRY = "NG";
 
-    const result = await checkVpn(ip);
+const vpnDetectionMiddleware = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    try {
+        const ip = getClientIp(req);
 
-     req.security = {
-        ...req.security,
-        vpnDetected: result.isVpn,
-        // vpnProvider: result.provider ?? null,
-        ip,
-    };
+        const result = await checkVpn(ip);
 
-    next();
+        const country = req.geo?.country;
+
+        const isOutsideNigeria =
+            country !== undefined &&
+            country !== null &&
+            country !== ALLOWED_COUNTRY;
+
+        req.security = {
+            ...req.security,
+
+            vpnDetected: result.isVpn,
+
+            ip,
+
+            country,
+
+            foreignCountry: isOutsideNigeria,
+        };
+
+        next();
+    } catch (error) {
+        next(error);
+    }
 };
 
 export default vpnDetectionMiddleware;

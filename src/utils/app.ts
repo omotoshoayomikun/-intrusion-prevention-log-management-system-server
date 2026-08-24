@@ -6,6 +6,9 @@ import authRoutes from "../routes/auth/auth.routes"
 import fileRoutes from "../routes/file/file.route"
 import userRoutes from "../routes/user/user.route"
 import logRoutes from "../routes/log/log.route"
+import blockedIPRoutes from "../routes/blockedIps/blockedips.route"
+import adminDashboardRoutes from "../routes/admin/admin-dashboard.route";
+import reportRoutes from "../routes/admin/report.routes";
 
 // import { notFound, errorHandler } from "../middleware/errors";
 
@@ -35,6 +38,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/file", fileRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/logs", logRoutes);
+app.use("/api/blocked-ips", blockedIPRoutes);
+app.use("/api/admin", adminDashboardRoutes);
+app.use("/api/admin", reportRoutes);
 
 app.get("/", (req, res) => {
     res.status(200).send("Server Works");
