@@ -83,17 +83,22 @@ class UserService {
         return {
             user: {
                 id: user._id,
-                name: `${user.firstname} ${user.lastname}`,
                 email: user.email,
             },
 
             statistics: {
                 totalFiles,
-                storageUsed,
+            },
+
+            storage: {
+                used: storageUsed,
+                total: 5 * 1024 * 1024 * 1024, // 5GB
             },
 
             recentFiles,
+
             recentActivities,
+
             lastLogin,
         };
     }
