@@ -3,6 +3,7 @@ import { createError } from "../../config/createError";
 import { uploadSingleDocument } from "../../helpers/documentUploader";
 import File from "../../models/file.model";
 import { parseQueryParams } from "../../utils/queryParams";
+import fileService from "../../services/file/file.service";
 // removed unused import that conflicted with local `file` variable
 
 
@@ -164,4 +165,49 @@ export const GetSingleFileController = async (
     } catch (error) {
         next(error);
     }
+};
+
+export const DeleteFileController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+
+    const userId = req.user?._id;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized. Please login.",
+      });
+    }
+
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: "File ID is required.",
+      });
+    }
+
+    const deletedFile =
+      await fileService.deleteFile(
+        id as string,
+        userId.toString()
+      );
+
+    return res.status(200).json({
+      success: true,
+      message: "File deleted successfully.",
+      data: {
+        id: deletedFile._id,
+        originalName: deletedFile.originalName,
+        deletedAt: deletedFile.deletedAt,
+      },
+    });
+
+  } catch (error) {
+    next(error);
+  }
 };

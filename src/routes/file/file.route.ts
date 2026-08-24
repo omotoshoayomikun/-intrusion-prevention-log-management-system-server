@@ -10,6 +10,12 @@ router.post("/upload", verifyToken,upload.single("document"), ...securityMiddlew
 router.get("/files", verifyToken, ...securityMiddleware, FileController.GetAllFilesController)
 router.get("/file", verifyToken, ...securityMiddleware, FileController.GetSingleFileController)
 router.get("/admin-get-files", ...securityMiddleware, verifyAdmin, FileController.AdminGetFileController)
+router.delete(
+  "/file/:id",
+  verifyToken,
+  ...securityMiddleware,
+  FileController.DeleteFileController
+);
 
 
 export default router;
