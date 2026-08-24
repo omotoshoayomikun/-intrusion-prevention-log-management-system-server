@@ -41,27 +41,36 @@ export enum SecurityAction {
 
 export interface ISecurityLog {
   userId?: Types.ObjectId | null;
+
   ipAddress: string;
-  country?: string;
-  region?: string;
-  city?: string;
-  latitude?: number;
-  longitude?: number;
+
+  country?: string | null;
+  region?: string | null;
+  city?: string | null;
+
+  latitude?: number | null;
+  longitude?: number | null;
+
   method: string;
   endpoint: string;
+
   statusCode: number;
   responseTime: number;
-  userAgent?: string;
-  browser?: string;
-  operatingSystem?: string;
-  device?: string;
+
+  userAgent?: string | null;
+  browser?: string | null;
+  operatingSystem?: string | null;
+  device?: string | null;
+
   severity: Severity;
   attackType: AttackType;
   actionTaken: SecurityAction;
+
+  requestId: string;
+  riskScore: number;
+
   createdAt: Date;
   updatedAt: Date;
-  requestId: string;
-  riskScore: number
 }
 
 export type SecurityLogDocument = HydratedDocument<ISecurityLog>;
@@ -113,6 +122,8 @@ export interface SecurityLogFilters {
   country?: string;
   from?: Date;
   to?: Date;
+  region?: string;
+  city?: string;
 }
 
 export interface PaginationMeta {

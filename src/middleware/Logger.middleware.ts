@@ -11,7 +11,11 @@ const requestLogger = (req: Request, res: Response, next: NextFunction) => {
     const browser = parser.getBrowser();
     const os = parser.getOS();
     const device = parser.getDevice();
-    const user_id = req.user?._id ? req.user?._id : null
+
+
+    // const user_id = req.user?._id ? req.user?._id : null
+
+
     const requestId = crypto.randomUUID();
 
     req.requestId = requestId;
@@ -20,12 +24,13 @@ const requestLogger = (req: Request, res: Response, next: NextFunction) => {
 
     res.on("finish", async () => {
         const responseTime = Date.now() - startTime;
+        const userId = req.user?._id ?? null;
 
         try {
 
 
             await SecurityLog.create({
-                userId: user_id,
+                userId,
                 ipAddress: ip,
                 country: req.geo?.country,
                 region: req.geo?.region,

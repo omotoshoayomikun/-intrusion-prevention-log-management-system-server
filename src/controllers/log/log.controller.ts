@@ -1,199 +1,214 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import securityLogService from "../../services/log/log.service";
-import {
-  DeleteManySecurityLogsSchema,
-  DeleteSecurityLogSchema,
-  ExportSecurityLogsSchema,
-  GetSecurityLogByIdSchema,
-  GetSecurityLogsSchema,
-} from "../../validations/log.validation";
+import { createError } from "../../config/createError";
+import { AttackType, SecurityAction, Severity } from "../../utils/types";
 
 class SecurityLogController {
-  /**
-   * GET /api/security-logs
-   */
-  async getLogs(req: Request,res: Response, next: NextFunction): Promise<void> {
-    try {
-      const filters = GetSecurityLogsSchema.parse(req.query);
+    /**
+     * Get all security logs
+     */
+    async getLogs(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const {
+                page,
+                limit,
+                from,
+                to,
+                ipAddress,
+                country,
+                severity,
+                attackType,
+                actionTaken,
+                method,
+                endpoint,
+                statusCode,
+            } = req.query;
 
-      const result = await securityLogService.getLogs(filters);
+            const result = await securityLogService.getLogs({
+                page: page ? Number(page) : 1,
+                limit: limit ? Number(limit) : 20,
+                from: from ? new Date(String(from)) : undefined,
+                to: to ? new Date(String(to)) : undefined,
+                ipAddress: ipAddress ? String(ipAddress) : undefined,
+                country: country ? String(country) : undefined,
+                severity: severity ? severity as Severity : undefined,
+                attackType: attackType ? attackType as AttackType : undefined,
+                actionTaken: actionTaken ? actionTaken as SecurityAction : undefined,
+                method: method ? String(method) : undefined,
+                endpoint: endpoint ? String(endpoint) : undefined,
+                statusCode: statusCode
+                    ? Number(statusCode)
+                    : undefined,
+            });
 
-      res.status(200).json({
-        success: true,
-        message: "Security logs retrieved successfully.",
-        data: result,
-      });
-    } catch (error) {
-      next(error);
+            return res.status(200).json({
+                success: true,
+                message: "Security logs retrieved successfully.",
+                data: result,
+            });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
-  /**
-   * GET /api/security-logs/:id
-   */
-  async getLogById(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { id } = GetSecurityLogByIdSchema.parse(req.params);
+    /**
+     * Get a single security log
+     */
+    async getLogById(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const { id } = req.params;
 
-      const log = await securityLogService.getLogById(id);
+            if (!id) {
+                return next(createError(400, "Log ID is required."));
+            }
 
-      res.status(200).json({
-        success: true,
-        message: "Security log retrieved successfully.",
-        data: log,
-      });
-    } catch (error) {
-      next(error);
+            const log = await securityLogService.getLogById(id as string);
+
+            return res.status(200).json({
+                success: true,
+                message: "Security log retrieved successfully.",
+                data: log,
+            });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
-  /**
-   * DELETE /api/security-logs/:id
-   */
-  async deleteLog(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { id } = DeleteSecurityLogSchema.parse(req.params);
+    /**
+     * Delete a security log
+     */
+    async deleteLog(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const { id } = req.params;
 
-      await securityLogService.deleteLog(id);
+            if (!id) {
+                return next(createError(400, "Log ID is required."));
+            }
 
-      res.status(200).json({
-        success: true,
-        message: "Security log deleted successfully.",
-      });
-    } catch (error) {
-      next(error);
+            await securityLogService.deleteLog(id as string);
+
+            return res.status(200).json({
+                success: true,
+                message: "Security log deleted successfully.",
+                data: null,
+            });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
-  /**
-   * DELETE /api/security-logs
-   */
-  async deleteManyLogs(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { ids } = DeleteManySecurityLogsSchema.parse(req.body);
+    /**
+     * Delete multiple security logs
+     */
+    async deleteManyLogs(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const { ids } = req.body;
 
-      const deletedCount =
-        await securityLogService.deleteManyLogs(ids);
+            if (!Array.isArray(ids) || ids.length === 0) {
+                return next(
+                    createError(
+                        400,
+                        "Please provide an array of log IDs."
+                    )
+                );
+            }
 
-      res.status(200).json({
-        success: true,
-        message: `${deletedCount} security log(s) deleted successfully.`,
-        data: {
-          deletedCount,
-        },
-      });
-    } catch (error) {
-      next(error);
+            const deletedCount =
+                await securityLogService.deleteManyLogs(ids);
+
+            return res.status(200).json({
+                success: true,
+                message: `${deletedCount} security log(s) deleted successfully.`,
+                data: {
+                    deletedCount,
+                },
+            });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
-  /**
-   * GET /api/security-logs/statistics
-   */
-  async getStatistics(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const statistics =
-        await securityLogService.getStatistics();
+    /**
+     * Get security statistics
+     */
+    async getStatistics(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const statistics =
+                await securityLogService.getStatistics();
 
-      res.status(200).json({
-        success: true,
-        message: "Statistics retrieved successfully.",
-        data: statistics,
-      });
-    } catch (error) {
-      next(error);
+            return res.status(200).json({
+                success: true,
+                message: "Security statistics retrieved successfully.",
+                data: statistics,
+            });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
-  /**
-   * GET /api/security-logs/recent-attacks
-   */
-  async getRecentAttacks(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const attacks =
-        await securityLogService.getRecentAttacks();
+    /**
+     * Get recent attacks
+     */
+    async getRecentAttacks(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const attacks =
+                await securityLogService.getRecentAttacks();
 
-      res.status(200).json({
-        success: true,
-        message: "Recent attacks retrieved successfully.",
-        data: attacks,
-      });
-    } catch (error) {
-      next(error);
+            return res.status(200).json({
+                success: true,
+                message: "Recent attacks retrieved successfully.",
+                data: attacks,
+            });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
 
-  /**
-   * GET /api/security-logs/dashboard
-   */
-  async getDashboard(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const dashboard =
-        await securityLogService.getDashboard();
+    /**
+     * Get dashboard security data
+     */
+    async getDashboard(
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ) {
+        try {
+            const dashboard =
+                await securityLogService.getDashboard();
 
-      res.status(200).json({
-        success: true,
-        message: "Dashboard data retrieved successfully.",
-        data: dashboard,
-      });
-    } catch (error) {
-      next(error);
+            return res.status(200).json({
+                success: true,
+                message: "Security dashboard data retrieved successfully.",
+                data: dashboard,
+            });
+        } catch (error) {
+            next(error);
+        }
     }
-  }
-
-  /**
-   * GET /api/security-logs/export
-   */
-  async exportLogs(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> {
-    try {
-      const { format } =
-        ExportSecurityLogsSchema.parse(req.query);
-
-      const logs = await securityLogService.getLogs({});
-
-      res.status(200).json({
-        success: true,
-        message: `Security logs exported as ${format}.`,
-        data: logs,
-      });
-
-      /**
-       * Later:
-       * Generate CSV or JSON file
-       * Stream file to client
-       */
-    } catch (error) {
-      next(error);
-    }
-  }
 }
 
 export default new SecurityLogController();

@@ -5,6 +5,7 @@ import { env } from "../utils/env";
 import authRoutes from "../routes/auth/auth.routes"
 import fileRoutes from "../routes/file/file.route"
 import userRoutes from "../routes/user/user.route"
+import logRoutes from "../routes/log/log.route"
 
 // import { notFound, errorHandler } from "../middleware/errors";
 
@@ -33,11 +34,7 @@ app.use(requestLogger);
 app.use("/api/auth", authRoutes);
 app.use("/api/file", fileRoutes);
 app.use("/api/user", userRoutes);
-// app.use("/api/customer", customerRoutes);
-// app.use("/api/staffs", staffRoutes);
-// app.use("/api/products", productRoutes);
-// app.use("/api/holidays", holidayRoutes);
-// app.use("/api/loans", loanRoutes);
+app.use("/api/logs", logRoutes);
 
 app.get("/", (req, res) => {
     res.status(200).send("Server Works");

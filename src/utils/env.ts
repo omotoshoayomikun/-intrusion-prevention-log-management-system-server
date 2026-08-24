@@ -12,7 +12,7 @@ export const env = {
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET || '',
     UPLOAD_PATH: process.env.UPLOAD_PATH || '',
     BASEURL: process.env.BASEURL || 'http://localhost:4110/',
-    FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3001',
+    FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:3000',
     TRANSPORTER_EMAIL: process.env.TRANSPORTER_EMAIL || "",
     TRANSPORTER_PASSWORD: process.env.TRANSPORTER_PASSWORD || "",
 }

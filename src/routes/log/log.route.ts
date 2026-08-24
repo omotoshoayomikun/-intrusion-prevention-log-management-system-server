@@ -1,89 +1,86 @@
 import { Router } from "express";
+import { verifyUser, verifyAdmin } from "../../middleware/verifyToken";
+import { securityMiddleware } from "../../middleware";
 import securityLogController from "../../controllers/log/log.controller";
 
-// Authentication Middleware
-// import authenticate from "../middleware/authenticate";
-
-// Authorization Middleware
-// import authorize from "../middleware/authorize";
-
-// Enums
-// import { UserRole } from "../interfaces/user.interface";
-
 const router = Router();
-
-/**
- * Apply Authentication
- */
-// router.use(authenticate);
-
-/**
- * Admin Only
- */
-// router.use(authorize(UserRole.ADMIN));
 
 /**
  * Dashboard
  */
 router.get(
-  "/dashboard",
-  securityLogController.getDashboard
+    "/dashboard",
+    verifyUser,
+    verifyAdmin,
+    ...securityMiddleware,
+    securityLogController.getDashboard
 );
 
 /**
  * Statistics
  */
 router.get(
-  "/statistics",
-  securityLogController.getStatistics
+    "/statistics",
+    verifyUser,
+    verifyAdmin,
+    ...securityMiddleware,
+    securityLogController.getStatistics
 );
 
 /**
- * Recent Attacks
+ * Recent attacks
  */
 router.get(
-  "/recent-attacks",
-  securityLogController.getRecentAttacks
+    "/recent-attacks",
+    verifyUser,
+    verifyAdmin,
+    ...securityMiddleware,
+    securityLogController.getRecentAttacks
 );
 
 /**
- * Export Logs
+ * Get all logs
+ *
+ * Example:
+ * GET /api/security-logs?page=1&limit=20&severity=HIGH
  */
 router.get(
-  "/export",
-  securityLogController.exportLogs
+    "/",
+    verifyUser,
+    verifyAdmin,
+    ...securityMiddleware,
+    securityLogController.getLogs
 );
 
 /**
- * Get All Logs
+ * Get single log
  */
 router.get(
-  "/",
-  securityLogController.getLogs
+    "/:id",
+    verifyUser,
+    verifyAdmin,
+    ...securityMiddleware,
+    securityLogController.getLogById
 );
 
 /**
- * Get Single Log
- */
-router.get(
-  "/:id",
-  securityLogController.getLogById
-);
-
-/**
- * Delete Multiple Logs
+ * Delete multiple logs
  */
 router.delete(
-  "/",
-  securityLogController.deleteManyLogs
+    "/",
+    verifyUser,
+    verifyAdmin,
+    securityLogController.deleteManyLogs
 );
 
 /**
- * Delete Single Log
+ * Delete single log
  */
 router.delete(
-  "/:id",
-  securityLogController.deleteLog
+    "/:id",
+    verifyUser,
+    verifyAdmin,
+    securityLogController.deleteLog
 );
 
 export default router;
