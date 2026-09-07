@@ -1,9 +1,13 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
+
 import logger from "./config/loggerConfig";
 import app from "./utils/app";
-import dotenv from "dotenv";
 import { env } from "./utils/env";
 import { connectDB } from "./config/dbConnection";
-dotenv.config();
+
 
 const startServer = async() => {
     try {
